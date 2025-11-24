@@ -24,12 +24,17 @@ import org.infinity.lib.DateConverter
 @Preview
 fun App() {
     MaterialTheme {
-
+        var date by remember { mutableStateOf("") }
         LaunchedEffect(Unit){
             val convertedDateBS = DateConverter.adToBs(1990, 6, 22)
             println("Converted Date in bs: $convertedDateBS")
             val convertedDateAD = DateConverter.bsToAd(convertedDateBS.year, convertedDateBS.month, convertedDateBS.day)
             println("Converted Date in ad: $convertedDateAD")
+            date = convertedDateAD.toString()
         }
+
+        Text(
+            date
+        )
     }
 }
