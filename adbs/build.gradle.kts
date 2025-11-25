@@ -11,6 +11,8 @@ plugins {
     id("maven-publish")
     id("signing")
 }
+group = "org.infinity.converter"
+version = "1.0.0"
 
 kotlin {
 
@@ -63,11 +65,18 @@ kotlin {
         browser()
     }
 
-    jvm("desktop")
+    jvm("desktop"){
+        compilations.all {
+            compilerOptions.configure {
+                jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+            }
+        }
+    }
     js {
         browser()
         nodejs()
     }
+
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the
     // Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
@@ -125,6 +134,21 @@ kotlin {
         wasmJsMain{
             dependencies{
 
+            }
+        }
+        all {
+            languageSettings.apply {
+                optIn("kotlin.ExperimentalMultiplatform")
+                optIn("kotlin.RequiresOptIn")
+            }
+        }
+    }
+
+    targets.all {
+        compilations.all {
+            compilerOptions.configure {
+                allWarningsAsErrors.set(false)
+                freeCompilerArgs.addAll("-Xexpect-actual-classes")
             }
         }
     }
