@@ -1,18 +1,13 @@
 @file:OptIn(ExperimentalWasmDsl::class)
 
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
-    alias(libs.plugins.androidLint)
-    alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.composeMultiplatform)
-    id("maven-publish")
-    id("signing")
+    alias(libs.plugins.vanniktech.mavenPublish)
 }
-group = "org.infinity.converter"
-version = "1.0.0"
 
 kotlin {
 
@@ -20,17 +15,22 @@ kotlin {
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     androidLibrary {
-        namespace = "org.infinity.lib"
+        namespace = "io.github.dangolchirag"
         compileSdk = 36
         minSdk = 24
 
-        withHostTestBuilder {
-        }
-
+        withJava() // enable java compilation support
+        withHostTestBuilder {}.configure {}
         withDeviceTestBuilder {
             sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+
+        compilations.configureEach {
+            compilerOptions.configure {
+                jvmTarget.set(
+                    JvmTarget.JVM_11
+                )
+            }
         }
     }
 
@@ -41,7 +41,7 @@ kotlin {
     // A step-by-step guide on how to include this library in an XCode
     // project can be found here:
     // https://developer.android.com/kotlin/multiplatform/migrate
-    val xcfName = "adbsKit"
+    val xcfName = "adbs"
 
     iosX64 {
         binaries.framework {
@@ -88,10 +88,6 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 // Add KMP dependencies here
                 implementation(libs.kotlinx.datetime)
-
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
             }
         }
 
@@ -153,4 +149,40 @@ kotlin {
         }
     }
 
+}
+
+
+mavenPublishing {
+    publishToMavenCentral()
+
+    signAllPublications()
+    group = "org.infinity.converter"
+    version = "1.0.0"
+    coordinates("io.github.dangolchirag", "adbs", "1.0.0")
+
+    pom {
+        name = "Converter"
+        description = "A library to converter AD to BS and vice versa"
+        inceptionYear = "2025"
+        url = "https://github.com/dangolchirag/ADBS-Converter"
+        licenses {
+            license {
+                name = "MIT"
+                url = "https://opensource.org/licenses/MIT"
+                distribution = "It is a open source"
+            }
+        }
+        developers {
+            developer {
+                id = "dangolchirag"
+                name = "Chirag Dangol"
+                url = "https://github.com/dangolchirag"
+            }
+        }
+        scm {
+            url = "https://github.com/dangolchirag/ADBS-Converter"
+            connection = "YYY"
+            developerConnection = "ZZZ"
+        }
+    }
 }
