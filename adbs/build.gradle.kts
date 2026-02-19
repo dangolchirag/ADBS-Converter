@@ -157,7 +157,7 @@ mavenPublishing {
 
     signAllPublications()
     group = "org.infinity.converter"
-    version = "1.0.0"
+    version = "1.0.1"
     coordinates("io.github.dangolchirag", "adbs", "1.0.1")
 
     pom {
